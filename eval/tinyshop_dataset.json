@@ -1,0 +1,186 @@
+[
+  {
+    "q": "How does authentication work?",
+    "expect": [
+      {
+        "path": "app/auth.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "Where is the login_required decorator defined?",
+    "expect": [
+      {
+        "path": "app/auth.py",
+        "lines": [
+          48,
+          62
+        ]
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How are passwords hashed?",
+    "expect": [
+      {
+        "path": "app/auth.py",
+        "lines": [
+          14,
+          19
+        ]
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How long is a token valid and how is it signed?",
+    "expect": [
+      {
+        "path": "app/auth.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "Where is the bulk discount calculated?",
+    "expect": [
+      {
+        "path": "app/orders.py",
+        "lines": [
+          9,
+          13
+        ]
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "What discount do customers get for ordering 10 or more items?",
+    "expect": [
+      {
+        "path": "app/orders.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How are failed payments retried?",
+    "expect": [
+      {
+        "path": "app/payments.py",
+        "lines": [
+          17,
+          27
+        ]
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "Which function charges a credit card?",
+    "expect": [
+      {
+        "path": "app/payments.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How does the order checkout validate stock?",
+    "expect": [
+      {
+        "path": "app/orders.py",
+        "lines": [
+          22,
+          36
+        ]
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "Where is the database schema defined?",
+    "expect": [
+      {
+        "path": "app/db.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How does the browser cart store items?",
+    "expect": [
+      {
+        "path": "web/cart.js"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How does the frontend call the checkout API?",
+    "expect": [
+      {
+        "path": "web/cart.js"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "What routes does the server expose?",
+    "expect": [
+      {
+        "path": "app/main.py"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How do I run the tests?",
+    "expect": [
+      {
+        "path": "CONTRIBUTING.md"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "What is the overall architecture and request flow?",
+    "expect": [
+      {
+        "path": "docs/architecture.md"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "What configuration options are there for payments retries?",
+    "expect": [
+      {
+        "path": "config.yaml"
+      }
+    ],
+    "answerable": true
+  },
+  {
+    "q": "How does the app send email notifications to customers?",
+    "expect": [],
+    "answerable": false
+  },
+  {
+    "q": "Where is the Kafka consumer implemented?",
+    "expect": [],
+    "answerable": false
+  },
+  {
+    "q": "How is GraphQL schema stitching configured?",
+    "expect": [],
+    "answerable": false
+  },
+  {
+    "q": "Which machine learning model recommends products?",
+    "expect": [],
+    "answerable": false
+  }
+]

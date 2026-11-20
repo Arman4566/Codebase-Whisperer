@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codebase Whisperer</title>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--line:#262b36;--text:#e6e9ef;--mute:#8b93a7;--acc:#6ea8fe;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171}
+  @media (prefers-color-scheme:light){:root{--bg:#f6f7f9;--panel:#fff;--line:#e3e6ec;--text:#1b1f27;--mute:#667085;--acc:#2563eb;--ok:#15803d;--warn:#b45309;--bad:#b91c1c}}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,Segoe UI,sans-serif}
+  header{display:flex;gap:12px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  h1{font-size:16px;margin:0;flex:1}.pill{font-size:12px;padding:2px 8px;border:1px solid var(--line);border-radius:99px;color:var(--mute)}
+  main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;padding:16px 20px;max-width:1400px;margin:auto}
+  @media(max-width:900px){main{grid-template-columns:1fr}}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin:0 0 10px}
+  input,select,textarea,button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+  button{cursor:pointer;background:var(--acc);color:#fff;border-color:transparent}button.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  button.ok{background:var(--ok)}button.bad{background:var(--bad)}button:disabled{opacity:.5;cursor:wait}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.row>input[type=text],.row>textarea{flex:1;min-width:140px}
+  .msg{border-top:1px solid var(--line);padding:10px 0}.q{font-weight:600}.claim{margin:6px 0}
+  .tag{font-size:11px;padding:1px 6px;border-radius:5px;margin-right:6px;font-weight:600}.tag.v{background:#14532d33;color:var(--ok)}.tag.a{background:#78350f33;color:var(--warn)}
+  code.cite{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:12px;cursor:pointer;color:var(--acc)}
+  .abstain{color:var(--warn)}pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;font-size:12px;max-height:320px;white-space:pre-wrap}
+  .mute{color:var(--mute);font-size:12px}.act{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+  .st-pending{color:var(--warn)}.st-approved{color:var(--ok)}.st-rejected,.st-failed{color:var(--bad)}
+  #guide{white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔎 Codebase Whisperer</h1>
+  <span class="pill" id="llm">…</span><span class="pill" id="cost"></span>
+  <select id="repo"></select>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>Add a repository</h2>
+      <div class="row"><input type="text" id="src" placeholder="GitHub URL, owner/repo, or local folder path"><button id="add">Index</button></div>
+      <div class="mute" id="repoinfo"></div>
+    </section>
+    <section>
+      <h2>Ask</h2>
+      <div class="row"><input type="text" id="q" placeholder="e.g. How does authentication work?">
+        <select id="lang"><option>English</option><option>Hindi</option><option>Spanish</option><option>French</option><option>German</option></select>
+        <button id="ask">Ask</button></div>
+      <div id="chat"></div>
+    </section>
+    <section>
+      <h2>Onboarding guide</h2>
+      <div class="row">
+        <select id="level"><option>beginner</option><option>intermediate</option><option>expert</option></select>
+        <input type="text" id="goal" placeholder="goal (optional) e.g. fix a payments bug">
+        <button id="onb">Generate</button></div>
+      <div class="mute" id="unv"></div><div id="guide"></div>
+    </section>
+  </div>
+  <div>
+    <section>
+      <h2>Approval queue (human in the loop)</h2>
+      <div class="row"><input type="text" id="issueReq" placeholder="Draft a GitHub issue about…"><button id="draft" class="ghost">Draft</button></div>
+      <div id="actions"></div>
+    </section>
+    <section>
+      <h2>Repository sync</h2>
+      <div class="row"><button id="sync">Sync now</button><span class="mute" id="synced"></span></div>
+      <pre id="syncout" hidden></pre>
+    </section>
+    <section><h2>Source preview</h2><div class="mute" id="srcref">Click a citation to see the evidence.</div><pre id="srcbody" hidden></pre></section>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let SOURCES={};
+async function api(path,body){
+  const r=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.statusText); return j;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const repo=()=>$('repo').value||null;
+function busy(btn,fn){return async()=>{btn.disabled=true;try{await fn()}catch(e){alert(e.message)}finally{btn.disabled=false}}}
+
+async function loadStatus(){
+  const s=await api('/api/status');
+  $('llm').textContent=s.llm?('LLM: '+s.chat_model):'offline mode (no API key)';
+  $('cost').textContent=s.llm?('≈ $'+s.est_cost_usd+' spent'):'';
+}
+async function loadRepos(){
+  const rs=await api('/api/repos'), sel=$('repo'), cur=sel.value;
+  sel.innerHTML='<option value="">all repositories</option>'+rs.map(r=>`<option value="${esc(r.name)}">${esc(r.name)}</option>`).join('');
+  if(cur) sel.value=cur; else if(rs.length===1) sel.value=rs[0].name;
+  $('repoinfo').innerHTML=rs.map(r=>`<b>${esc(r.name)}</b> · ${r.files} files · ${r.chunks} chunks · commit <code>${esc((r.head||'n/a').slice(0,7))}</code> · ${esc(r.dense_backend)}`).join('<br>');
+}
+$('add').onclick=busy($('add'),async()=>{await api('/api/repos/add',{source:$('src').value}); $('src').value=''; await loadRepos();});
+
+function renderCite(c){return `<code class="cite" data-ref="${esc(c)}">${esc(c)}</code>`}
+function renderAnswer(a){
+  let h=`<div class="msg"><div class="q">${esc(a.question)}</div>`;
+  if(a.abstained) h+=`<div class="abstain">⚠️ ${esc(a.answer)}</div>`;
+  else if(a.claims&&a.claims.length){
+    const sm=a.answer.split('\n')[0]; if(a.mode==='llm'&&sm&&!sm.startsWith('-')) h+=`<div>${esc(sm)}</div>`;
+    h+=a.claims.map(c=>`<div class="claim"><span class="tag ${c.status==='verified'?'v':'a'}">${c.status==='verified'?'VERIFIED':'ASSUMPTION'}</span>${esc(c.text)} ${c.citations.map(renderCite).join(' ')}</div>`).join('');
+  } else h+=`<div>${esc(a.answer)}</div>`;
+  h+=`<div class="mute">mode: ${a.mode} · evidence coverage ${a.coverage} · ${a.elapsed_s}s · indexed at ${esc(Object.values(a.indexed_commit||{}).join(', '))}</div></div>`;
+  return h;
+}
+$('ask').onclick=busy($('ask'),async()=>{
+  const q=$('q').value.trim(); if(!q) return;
+  const a=await api('/api/ask',{question:q,repo:repo(),language:$('lang').value});
+  a.sources.forEach(s=>SOURCES[s.ref]=s); a.sources.forEach(s=>SOURCES[s.repo+':'+s.ref]=s);
+  $('chat').insertAdjacentHTML('afterbegin',renderAnswer(a)); loadStatus();
+});
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('ask').click()});
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.cite'); if(!c) return;
+  const ref=c.dataset.ref, base=ref.replace(/:L\d+-L\d+$/,''), s=Object.entries(SOURCES).find(([k])=>k===ref||k.startsWith(base))?.[1];
+  $('srcref').textContent=ref; const p=$('srcbody'); p.hidden=false; p.textContent=s?s.snippet:'(not in the latest result set)';
+});
+$('onb').onclick=busy($('onb'),async()=>{
+  const g=await api('/api/onboarding',{repo:repo(),level:$('level').value,goal:$('goal').value,language:$('lang').value});
+  $('guide').textContent=g.markdown; $('unv').textContent=g.unverified_paths.length?('⚠ unverified paths: '+g.unverified_paths.join(', ')):'✓ every file path in this guide exists in the repo';
+});
+async function loadActions(){
+  const as=await api('/api/actions');
+  $('actions').innerHTML=as.length?as.map(a=>`<div class="act"><b>${esc(a.kind)}</b> · ${esc(a.repo)} · <span class="st-${a.status}">${a.status}</span><br>${esc(a.title)}
+    <details><summary class="mute">body</summary><pre>${esc(a.body)}</pre></details>
+    ${a.status==='pending'?`<div class="row"><button class="ok" data-act="approve" data-id="${a.id}">Approve</button><button class="bad" data-act="reject" data-id="${a.id}">Reject</button></div>`:''}
+    ${a.result?`<div class="mute">${esc(JSON.stringify(a.result))}</div>`:''}</div>`).join(''):'<div class="mute">No actions yet. The agent can only propose; you decide.</div>';
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  try{await api(`/api/actions/${b.dataset.id}/${b.dataset.act}`,{by:'ui-user'});await loadActions()}catch(err){alert(err.message)}
+});
+$('draft').onclick=busy($('draft'),async()=>{const r=$('issueReq').value.trim(); if(!r) return; await api('/api/actions/draft-issue',{request:r,repo:repo()}); $('issueReq').value=''; await loadActions();});
+$('sync').onclick=busy($('sync'),async()=>{
+  const r=await api('/api/sync',{repo:repo()}); const p=$('syncout'); p.hidden=false;
+  p.textContent=`${r.from} → ${r.to}\n${r.summary}\nre-indexed chunks: ${r.reindexed_chunks}`; $('synced').textContent='last synced '+new Date(r.synced_at*1000).toLocaleTimeString(); await loadRepos();
+});
+loadStatus();loadRepos();loadActions();
+</script>
+</body>
+</html>

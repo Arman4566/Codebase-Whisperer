@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1128">
+<title>Codebase Whisperer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div id="sky" aria-hidden="true"></div>
+<div id="root">
+  <p style="padding:24px;font-family:Georgia,serif;color:#bcb9ca">Loading Codebase Whisperer</p>
+</div>
+<noscript><p style="padding:24px;color:#ece7da">This page needs JavaScript. <a href="/classic" style="color:#f0c75e">Open the simple version</a>.</p></noscript>
+<script src="/static/app.js"></script>
+<script>
+  // If the app bundle didn't start, point to the simple page rather than leaving a blank screen.
+  setTimeout(function () {
+    var r = document.getElementById("root");
+    if (r && !r.dataset.ready) {
+      r.innerHTML = '<p style="padding:24px;font-family:Georgia,serif;color:#ece7da">The interface didn\'t load. <a href="/classic" style="color:#f0c75e">Open the simple version</a>, or rebuild it with <code>npm run build</code> in the frontend folder.</p>';
+    }
+  }, 4000);
+</script>
+</body>
+</html>

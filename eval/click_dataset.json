@@ -1,0 +1,233 @@
+[
+ {
+  "q": "Where is the Context class defined?",
+  "expect": [
+   {
+    "path": "src/click/core.py",
+    "lines": [
+     236,
+     236
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "Where is the echo function implemented?",
+  "expect": [
+   {
+    "path": "src/click/utils.py",
+    "lines": [
+     236,
+     236
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does click ask the user a yes/no confirmation?",
+  "expect": [
+   {
+    "path": "src/click/termui.py",
+    "lines": [
+     289,
+     289
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "Where is the progress bar implemented?",
+  "expect": [
+   {
+    "path": "src/click/_termui_impl.py",
+    "lines": [
+     43,
+     43
+    ]
+   },
+   {
+    "path": "src/click/termui.py",
+    "lines": [
+     403,
+     403
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How are shell completions registered for a new shell?",
+  "expect": [
+   {
+    "path": "src/click/shell_completion.py",
+    "lines": [
+     560,
+     560
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "What exception is raised when a parameter value is invalid?",
+  "expect": [
+   {
+    "path": "src/click/exceptions.py",
+    "lines": [
+     114,
+     114
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does the Choice parameter type validate values?",
+  "expect": [
+   {
+    "path": "src/click/types.py",
+    "lines": [
+     324,
+     324
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How do I test a command line app with a runner?",
+  "expect": [
+   {
+    "path": "src/click/testing.py",
+    "lines": [
+     341,
+     341
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How are command groups implemented?",
+  "expect": [
+   {
+    "path": "src/click/core.py",
+    "lines": [
+     1694,
+     1694
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does click apply styling and colors to terminal text?",
+  "expect": [
+   {
+    "path": "src/click/termui.py",
+    "lines": [
+     641,
+     641
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does click read a single character from the keyboard?",
+  "expect": [
+   {
+    "path": "src/click/termui.py",
+    "lines": [
+     957,
+     957
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How is a command decorator created?",
+  "expect": [
+   {
+    "path": "src/click/decorators.py",
+    "lines": [
+     134,
+     164
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does the pass_context decorator work?",
+  "expect": [
+   {
+    "path": "src/click/decorators.py",
+    "lines": [
+     24,
+     24
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does click launch a URL or file in the default application?",
+  "expect": [
+   {
+    "path": "src/click/termui.py",
+    "lines": [
+     923,
+     923
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How does the Path parameter type check that a file exists?",
+  "expect": [
+   {
+    "path": "src/click/types.py",
+    "lines": [
+     1030,
+     1030
+    ]
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "How are command line arguments parsed into options and values?",
+  "expect": [
+   {
+    "path": "src/click/parser.py"
+   }
+  ],
+  "answerable": true
+ },
+ {
+  "q": "Where is the Kubernetes operator?",
+  "expect": [],
+  "answerable": false
+ },
+ {
+  "q": "How is the GraphQL schema configured?",
+  "expect": [],
+  "answerable": false
+ },
+ {
+  "q": "Where does the Redis cache layer store sessions?",
+  "expect": [],
+  "answerable": false
+ },
+ {
+  "q": "How does the Kafka consumer process messages?",
+  "expect": [],
+  "answerable": false
+ }
+]

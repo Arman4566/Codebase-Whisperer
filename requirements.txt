@@ -1,0 +1,8 @@
+starlette>=0.37
+uvicorn>=0.30
+mcp>=2.0
+requests>=2.31
+numpy>=1.26
+scikit-learn>=1.4
+python-dotenv>=1.0
+pytest>=8.0
