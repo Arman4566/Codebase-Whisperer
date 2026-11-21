@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import json
 import sys
 from pathlib import Path
@@ -27,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("repos", help="list indexed repositories")
     ac = sub.add_parser("actions", help="review the approval queue")
     ac.add_argument("op", choices=["list", "approve", "reject"]); ac.add_argument("id", nargs="?"); ac.add_argument("--reason", default="")
-    sv = sub.add_parser("serve", help="web UI + HTTP API"); sv.add_argument("--host", default="127.0.0.1"); sv.add_argument("--port", type=int, default=8000)
+    sv = sub.add_parser("serve", help="web UI + HTTP API"); sv.add_argument("--host", default=os.environ.get("HOST") or ("0.0.0.0" if os.environ.get("PORT") else "127.0.0.1")); sv.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
     sub.add_parser("mcp", help="run the MCP server over stdio")
 
     args = p.parse_args(argv)

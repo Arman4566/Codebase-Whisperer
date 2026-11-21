@@ -127,3 +127,12 @@ whisperer/  chunker.py loader.py index.py agent.py onboarding.py actions.py eval
 sample_repo/  demo repo with real git history      eval/  datasets + results      tests/  20 tests
 ```
 Built against `mcp>=2` (`mcp.server.mcpserver.MCPServer`); the web layer is Starlette (FastAPI is not required).
+
+## Deploy on Render
+
+1. Push this folder to a GitHub repository (`.env` and `data/` are git-ignored; the built frontend in `whisperer/static` is committed).
+2. Render dashboard: New, Blueprint (reads `render.yaml`), or New, Web Service with build `pip install -r requirements.txt` and start `python -m whisperer serve`.
+3. Environment variables: `OPENAI_API_KEY` and `WHISPERER_PASSWORD` (required for a public site). Optional: `GITHUB_TOKEN`, `WHISPERER_ALLOW_GITHUB_WRITES=1`.
+4. Open the URL, enter any username and your password, then add a repository from the Repositories tab.
+
+The free plan sleeps after inactivity and its disk is wiped on restart, so repositories must be re-indexed. For persistence use a paid plan with a disk mounted at `/var/data` (`WHISPERER_DATA`).

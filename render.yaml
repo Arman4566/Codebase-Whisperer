@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: codebase-whisperer
+    runtime: python
+    plan: free            # free instances sleep and lose indexed repos on restart; use a paid plan + disk for persistence
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m whisperer serve
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: OPENAI_API_KEY
+        sync: false          # paste in the Render dashboard, never commit it
+      - key: WHISPERER_PASSWORD
+        sync: false          # protects the whole site with a password
+      - key: WHISPERER_DATA
+        value: /var/data     # mount a Render disk here for persistence (paid plans)
+      - key: WHISPERER_ALLOW_GITHUB_WRITES
+        value: "0"

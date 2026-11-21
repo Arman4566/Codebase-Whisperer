@@ -245,3 +245,17 @@ def test_mcp_has_navigation_tools():
     from whisperer import mcp_server
     names = {t.name for t in asyncio.run(mcp_server.mcp.list_tools())}
     assert {"explain_file", "find_usages"} <= names
+
+
+# ------------------------------------------------------------------ deployment
+def test_password_gate(monkeypatch):
+    from starlette.testclient import TestClient
+    from whisperer.api import app
+    c = TestClient(app)
+    monkeypatch.delenv("WHISPERER_PASSWORD", raising=False)
+    assert c.get("/api/status").status_code == 200                 # open when no password is set (local use)
+    monkeypatch.setenv("WHISPERER_PASSWORD", "s3cret")
+    assert c.get("/api/status").status_code == 401
+    assert c.get("/healthz").status_code == 200
+    assert c.get("/api/status", auth=("me", "wrong")).status_code == 401
+    assert c.get("/api/status", auth=("me", "s3cret")).status_code == 200
