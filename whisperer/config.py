@@ -33,7 +33,16 @@ class Settings:
         return bool(self.openai_api_key)
 
     def ensure_dirs(self) -> None:
-        (self.data_dir / "repos").mkdir(parents=True, exist_ok=True)
+        try:
+            (self.data_dir / "repos").mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            # e.g. WHISPERER_DATA=/var/data without a mounted disk: keep running, but on temporary storage
+            import sys
+            import tempfile
+            fallback = Path(tempfile.gettempdir()) / "whisperer-data"
+            print(f"WARNING: cannot use data dir {self.data_dir} ({e}); using {fallback} (not persistent)", file=sys.stderr)
+            self.data_dir = fallback
+            (self.data_dir / "repos").mkdir(parents=True, exist_ok=True)
 
 
 def get_settings() -> Settings:

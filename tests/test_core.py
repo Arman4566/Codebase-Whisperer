@@ -259,3 +259,13 @@ def test_password_gate(monkeypatch):
     assert c.get("/healthz").status_code == 200
     assert c.get("/api/status", auth=("me", "wrong")).status_code == 401
     assert c.get("/api/status", auth=("me", "s3cret")).status_code == 200
+
+
+def test_unwritable_data_dir_falls_back_instead_of_crashing(monkeypatch, tmp_path):
+    from whisperer.config import Settings
+    blocker = tmp_path / "file"
+    blocker.write_text("x")                                  # a file where a directory is needed -> mkdir fails
+    monkeypatch.setenv("WHISPERER_DATA", str(blocker / "data"))
+    s = Settings()
+    s.ensure_dirs()
+    assert s.data_dir != blocker / "data" and (s.data_dir / "repos").is_dir()

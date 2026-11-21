@@ -13,7 +13,7 @@ services:
         sync: false          # paste in the Render dashboard, never commit it
       - key: WHISPERER_PASSWORD
         sync: false          # protects the whole site with a password
-      - key: WHISPERER_DATA
-        value: /var/data     # mount a Render disk here for persistence (paid plans)
+      # Persistence (paid plans only): add a Render disk mounted at /var/data, then add the env var WHISPERER_DATA=/var/data.
+      # On the free plan leave WHISPERER_DATA unset; repositories live on temporary storage and are lost on restart.
       - key: WHISPERER_ALLOW_GITHUB_WRITES
         value: "0"

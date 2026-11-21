@@ -135,4 +135,4 @@ Built against `mcp>=2` (`mcp.server.mcpserver.MCPServer`); the web layer is Star
 3. Environment variables: `OPENAI_API_KEY` and `WHISPERER_PASSWORD` (required for a public site). Optional: `GITHUB_TOKEN`, `WHISPERER_ALLOW_GITHUB_WRITES=1`.
 4. Open the URL, enter any username and your password, then add a repository from the Repositories tab.
 
-The free plan sleeps after inactivity and its disk is wiped on restart, so repositories must be re-indexed. For persistence use a paid plan with a disk mounted at `/var/data` (`WHISPERER_DATA`).
+The free plan sleeps after inactivity and its disk is wiped on restart, so repositories must be re-indexed. For persistence use a paid plan with a disk mounted at `/var/data`, then set `WHISPERER_DATA=/var/data`. If that variable points somewhere unwritable, the app logs a warning and uses temporary storage instead of crashing.
