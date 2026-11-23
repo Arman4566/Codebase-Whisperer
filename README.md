@@ -1,5 +1,44 @@
 # Codebase Whisperer
 
+**Hackathon submission: PS-04 · RAG & MCP**  ·  Team: Strawhats
+
+**Live demo:** https://codebase-whisperer.onrender.com/  (hosted on Render; see "Try the live demo" below)
+**username** arman
+**password** password
+
+## Problem statement
+
+**PS-04 · RAG & MCP: The Codebase Whisperer - Build an AI Agent That Understands Code**
+
+New developers often spend weeks navigating unfamiliar codebases before they can understand the architecture or contribute
+meaningful changes. Build an intelligent RAG-powered coding agent that understands an entire open-source repository, answers
+technical questions with precise file and line-level citations, generates personalised onboarding guides, and performs
+repository actions through MCP tools with human approval. The agent should continuously track repository updates, distinguish
+verified information from assumptions, and help developers move from understanding code to contributing to it.
+
+**What good looks like:** a repository-aware agent that understands code, documentation, issues and commit history using
+intelligent retrieval and code-specific chunking; answers architectural questions with exact file paths and line references;
+acknowledges when information is unavailable; generates onboarding guides with architecture, key modules and beginner-friendly
+contribution opportunities; offers MCP actions such as creating GitHub issues or drafting pull requests with explicit human
+approval; synchronises with the repository; and shows measurable retrieval accuracy on a test dataset. Outstanding submissions
+support multiple repositories, multilingual explanations and intelligent change summaries.
+
+## Try the live demo (for judges)
+
+1. Open the live link above. If the page takes about 30 seconds to load, the free Render instance was asleep; wait and refresh.
+2. If the browser asks for a login, use the username and password given in the submission form.
+3. **Repositories** tab: add a repository, for example `pallets/click` (a GitHub URL or `owner/repo`) and wait for "Indexed".
+   The free instance restarts now and then and forgets indexed repositories; just add it again.
+4. **Ask** tab: try "Where is the echo function implemented?" (cited answer), then "Where is the Kubernetes operator?"
+   (it should say the repository has no such thing), then a follow-up like "and where is it tested?".
+5. **Guide** tab: write an onboarding guide; pick a level and a goal, and a language for the answers.
+6. **Explore** tab: explain a file, or find every usage of a function.
+7. **Approvals** tab: draft an issue from the Guide or Ask, then approve or reject it. Nothing is sent to GitHub until a
+   human approves, and GitHub writes are off by default on the demo (an approval is recorded as a dry run).
+8. **Sync** tab: pull the latest commits and get a change summary.
+
+Every answer shows **Verified** (solid teal rule, with `path:Lstart-Lend` citations) or **Assumption** (dashed lilac rule).
+
 A repo-aware AI agent (PS-04 · RAG & MCP). It indexes a repository - code, docs, issues and commit history - answers
 questions with **file + line citations**, tags every claim **verified vs assumption**, says so when the repo does **not**
 contain the answer, writes **personalised onboarding guides**, keeps itself **in sync** with the repo, and performs
@@ -26,7 +65,7 @@ python -m whisperer onboard --level beginner --goal "fix a payments bug"
 python -m whisperer serve                                # web UI + API on http://127.0.0.1:8000
 python -m whisperer mcp                                  # MCP server over stdio
 python -m whisperer eval eval/tinyshop_dataset.json --repo tinyshop
-pytest -q                                                # 20 tests
+pytest -q                                                # 30 tests
 ```
 
 Without `OPENAI_API_KEY` everything still runs offline (local TF-IDF retrieval, extractive answers). With a key you get
@@ -67,7 +106,7 @@ lilac rule, so the difference does not depend on colour alone.
 - Rebuild after editing `frontend/src`: `cd frontend && npm install && npm run build`
   (writes `whisperer/static/app.js` and `app.css`). Tests: `node --test test/core.test.mjs test/threeview.test.mjs test/inline.test.mjs`.
 
-Tested honestly: 29 browser checks (Playwright, Chromium) cover layout at 320-1440px, no horizontal scroll, no JS errors,
+Tested honestly: 33 browser checks (Playwright, Chromium) cover layout at 320-1440px, no horizontal scroll, no JS errors,
 reduced motion and the 2D fallback. The sandbox had no Three.js access, so the WebGL path was verified only against a
 mock of the Three API, not rendered on a real GPU. Open it once on your machine and check the map; if it fails,
 the 2D map takes over automatically.
@@ -124,7 +163,7 @@ questions wrongly refused on either.
 ## Layout
 ```
 whisperer/  chunker.py loader.py index.py agent.py onboarding.py actions.py evaluate.py mcp_server.py api.py cli.py static/index.html
-sample_repo/  demo repo with real git history      eval/  datasets + results      tests/  20 tests
+sample_repo/  demo repo with real git history      eval/  datasets + results      tests/  30 tests
 ```
 Built against `mcp>=2` (`mcp.server.mcpserver.MCPServer`); the web layer is Starlette (FastAPI is not required).
 
